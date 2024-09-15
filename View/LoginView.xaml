@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Proyect_Food.View"
+        xmlns:viewModel="clr-namespace:WPF_Proyect_Food.ViewModel"
+        d:DataContext="{d:DesignInstance Type=viewModel:LoginViewModel}"
         mc:Ignorable="d"
         Title="LoginView"
         Height="600"
@@ -18,17 +20,19 @@
             <ImageBrush ImageSource="/Resources/Images/Background_B.png"
                         Stretch="UniformToFill" />
         </Border.Background>
-        <!-- Gradient color border -->
-        <Border Opacity="0.90">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0"
-                                     EndPoint="1,1">
-                    <GradientStop Color="#CFE5FB"
-                                  Offset="0" />
-                    <GradientStop Color="#6FB1F3"
-                                  Offset="1" />
-                </LinearGradientBrush>
-            </Border.Background>
+        <Grid>
+            <!-- Gradient color border -->
+            <Border Opacity="0.90">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="1,1">
+                        <GradientStop Color="#CFE5FB"
+                                      Offset="0" />
+                        <GradientStop Color="#6FB1F3"
+                                      Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="28*" />
@@ -36,6 +40,7 @@
                     <ColumnDefinition Width="28*" />
                 </Grid.ColumnDefinitions>
 
+                <!-- Login button column -->
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="5*" />
@@ -51,23 +56,34 @@
 
                         <Button x:Name="btnMinimice"
                                 Click="btnMinimice_Click"
-                                Foreground="#EFF6FD"
                                 Content="-"
+                                FontSize="20"
                                 Margin="2"
                                 Grid.Column="1">
                             <Button.Style>
                                 <Style TargetType="Button">
+                                    <Setter Property="Foreground"
+                                            Value="#EFF6FD" />
                                     <Setter Property="Background"
                                             Value="#253B51" />
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseCaptured"
+                                        <Trigger Property="IsMouseOver"
                                                  Value="True">
                                             <Setter Property="Background"
-                                                    Value="#24292E" />
+                                                    Value="Red" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="5"
+                                            Background="{TemplateBinding Background}">
+                                        <ContentPresenter VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
                         </Button>
 
                         <Button x:Name="btnClose"
@@ -80,7 +96,10 @@
                     </Grid>
                 </Grid>
                 <StackPanel Background="#4A76A2"
-                            Orientation="Vertical"
+                            Opacity="0.8"
+                            Grid.Column="1" />
+
+                <StackPanel Orientation="Vertical"
                             Grid.Column="1">
                     <Image Source="/Resources/Images/Hamburgesa.png"
                            Width="150"
@@ -97,6 +116,7 @@
                                Foreground="#EFF6FD"
                                FontWeight="DemiBold" />
                     <TextBox x:Name="txtUser"
+                             Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                              Margin="20,0"
                              Padding="30,0,0,0"
                              Height="28"
@@ -113,6 +133,7 @@
                                Foreground="#EFF6FD"
                                FontWeight="DemiBold" />
                     <PasswordBox x:Name="txtPassword"
+                                 PasswordChanged="PasswordBox_PasswordChanged"
                                  Margin="20,0"
                                  Padding="30,0,0,0"
                                  Height="28"
@@ -124,14 +145,35 @@
                                         AlignmentX="Left" />
                         </PasswordBox.Background>
                     </PasswordBox>
+
+                    <TextBlock x:Name="txtLoginMessage"
+                               Text="{Binding LoginMessage}"
+                               Margin="20,15,20,0"
+                               Foreground="RED"
+                               FontWeight="DemiBold" />
+
                     <Button x:Name="btnLogin"
+                            Command="{Binding LoginCommand}"
+                            Click="OnLoginClick"
                             Content="LOG IN"
                             FontSize="20"
                             Foreground="#EFF6FD"
-                            Background="Black"
                             FontWeight="Medium"
                             Margin="60,30"
                             Height="40">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background"
+                                        Value="Black" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="RED" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border CornerRadius="20"
@@ -144,7 +186,9 @@
                     </Button>
                 </StackPanel>
             </Grid>
-        </Border>
+        </Grid>
+
+
     </Border>
 
 </Window>
