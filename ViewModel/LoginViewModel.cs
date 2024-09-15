@@ -18,6 +18,15 @@ namespace WPF_Proyect_Food.ViewModel
         private string _loginMessage;
         private string connectionString = "Server = localhost\\SQLEXPRESS;Database=JI_FOOD;Trusted_Connection=True;";
 
+        // Interfaz implementada
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // Propiedades de enlace
         public string Username
         {
             get => _username;
@@ -25,7 +34,9 @@ namespace WPF_Proyect_Food.ViewModel
             {
                 _username = value;
                 OnPropertyChanged(nameof(Username));
-                ((RelayCommand)LoginCommand).RaiseCanExecuteChanged();
+
+                // Forzar la reevaluación del CanExecute
+                LoginCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -36,7 +47,9 @@ namespace WPF_Proyect_Food.ViewModel
             {
                 _password = value;
                 OnPropertyChanged(nameof(Password));
-                ((RelayCommand)LoginCommand).RaiseCanExecuteChanged();
+
+                // Forzar la reevaluación del CanExecute
+                LoginCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -50,58 +63,68 @@ namespace WPF_Proyect_Food.ViewModel
             }
         }
 
-        public ICommand LoginCommand { get; }
-
-
-        public event PropertyChangedEventHandler? PropertyChanged;
+        // Comandos
+        public RelayCommand LoginCommand { get; }
 
         public LoginViewModel()
         {
-            LoginCommand = new RelayCommand(Login, CanLogin);
+            // Inicializar el comando
+            LoginCommand = new RelayCommand(ExecuteLogin, CanExecuteLogin);
         }
 
-        private void OnPropertyChanged(string propertyName)
+        // Verifica si el login puede ejecutarse
+        private bool CanExecuteLogin(object parameter)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private bool CanLogin(object parameter)
-        {
+            // Solo permitir login si el usuario y la contraseña no están vacíos
             return !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password);
         }
 
-        private void Login(object parameter)
+        // Ejecutar el login
+        private void ExecuteLogin(object parameter)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            if (IsValidUser(Username, Password))
             {
-                Console.WriteLine("CONSULTA");
-                connection.Open();
-                string query = "SELECT * FROM [JI_FOOD].[dbo].[Users] WHERE Nick = @Username AND Password = @Password";
+                // Si el login es correcto ejecutamos esta parte
+                new MainView().Show();
+                Application.Current.MainWindow.Close();
 
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Username", _username);
-                command.Parameters.AddWithValue("@Password", _password);
+                LoginMessage = string.Empty;
+            } else
+            {
+                // Si el login es incorrecto ejecutamos esta parte
+                LoginMessage = "Invalid username or password";
+            }
+        }
 
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows)
+        private bool IsValidUser(string username, string password)
+        {
+            string query = "SELECT * FROM [JI_FOOD].[dbo].[Users] WHERE Nick = @Username AND Password = @Password";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    // Cuando encontramos al usuario
-                    while (reader.Read())
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Password", password);
+
+                    connection.Open();
+                    object result = command.ExecuteScalar();
+
+                    if (result != null)
                     {
-                        new MainView().Show();
-
-                        LoginMessage = "BIENVENIDO";
-
-                        Application.Current.MainWindow.Close();
+                        int userCount = Convert.ToInt32(result);
+                        return userCount > 0;
                     }
-                }
-                else
-                {
-                    LoginMessage = "ERROR EN EL USUARIO O CONTRASEÑA";
-                    // Cuando el login falla
+                    else
+                    {
+                        return false;
+                    }
+
                 }
             }
-
+            catch (SqlException ex) { return false; }
+            catch (Exception ex) { return false; }
         }
     }
 }

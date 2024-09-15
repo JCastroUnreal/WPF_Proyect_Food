@@ -32,10 +32,10 @@ namespace WPF_Proyect_Food.ViewModel
         // Se le llama cuando el comando se ejecuta
         public void Execute(object? parameter)
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            _execute?.Invoke(parameter);
         }
 
-        // Notificar que el estado CanExecute ha cambiado
+        // Método para forzar la actualización del CanExecute
         public void RaiseCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);

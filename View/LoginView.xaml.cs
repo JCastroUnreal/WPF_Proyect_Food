@@ -42,68 +42,16 @@ namespace WPF_Proyect_Food.View
             Application.Current.Shutdown();
         }
 
-        private void OnLoginClick(object sender, RoutedEventArgs e)
-        {
-            string username = txtUser.Text;
-            string password = txtPassword.Password;
-
-            if (IsValidUser(username, password))
-            {
-                new MainView().Show();
-
-                txtLoginMessage.Text = "BIENVENIDO";
-
-                Application.Current.MainWindow.Close();
-
-            }
-            else
-            {
-                txtLoginMessage.Text = "ERROR EN EL USUARIO O CONTRASEÑA";
-            }
-        }
-
-        private bool IsValidUser(string username, string password)
-        {
-            string connectionString = "Server = localhost\\SQLEXPRESS;Database=JI_FOOD;Trusted_Connection=True;";
-            string query = "SELECT * FROM [JI_FOOD].[dbo].[Users] WHERE Nick = @Username AND Password = @Password";
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    SqlCommand command = new SqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@Username", username);
-                    command.Parameters.AddWithValue("@Password", password);
-
-                    connection.Open();
-                    object result = command.ExecuteScalar();
-
-                    if (result != null)
-                    {
-                        int userCount = Convert.ToInt32(result);
-                        return userCount > 0;
-                    } else
-                    {
-                        return false;
-                    }
-
-                }
-            }
-            catch (SqlException ex) { return false; }
-            catch (Exception ex) { return false; }
-
-
-        }
-
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
+            // Obtener el valor del PasswordBox
             var passwordBox = sender as PasswordBox;
-            var viewModel = (LoginViewModel)this.DataContext;
+            string password = passwordBox.Password;
 
-            if (viewModel != null)
-            {
-                viewModel.Password = passwordBox.Password;
-            }
+            // Acceder al ViewModel y actualizar la propiedad Password
+            var viewModel = (LoginViewModel)this.DataContext;
+            viewModel.Password = password;
+
         }
     }
 }

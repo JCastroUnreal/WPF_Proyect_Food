@@ -5,15 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Proyect_Food.View"
         xmlns:viewModel="clr-namespace:WPF_Proyect_Food.ViewModel"
-        d:DataContext="{d:DesignInstance Type=viewModel:LoginViewModel}"
         mc:Ignorable="d"
         Title="LoginView"
         Height="600"
         Width="700"
         WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
         Background="Transparent"
         AllowsTransparency="True"
         MouseDown="Window_MouseDown">
+
+    <!-- Esta etiqueta nos permite realizar el enlace con el ViewModel -->
+    <Window.DataContext>
+        <viewModel:LoginViewModel />
+    </Window.DataContext>
+
     <!-- Image border -->
     <Border CornerRadius="12">
         <Border.Background>
@@ -40,7 +46,7 @@
                     <ColumnDefinition Width="28*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Login button column -->
+                <!-- Login buttons minimice/close column -->
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="5*" />
@@ -58,6 +64,7 @@
                                 Click="btnMinimice_Click"
                                 Content="-"
                                 FontSize="20"
+                                FontWeight="Bold"
                                 Margin="2"
                                 Grid.Column="1">
                             <Button.Style>
@@ -70,7 +77,7 @@
                                         <Trigger Property="IsMouseOver"
                                                  Value="True">
                                             <Setter Property="Background"
-                                                    Value="Red" />
+                                                    Value="#182736" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -88,13 +95,39 @@
 
                         <Button x:Name="btnClose"
                                 Click="btnClose_Click"
-                                Foreground="#EFF6FD"
-                                Background="#D93025"
-                                Content="x"
+                                Content="X"
+                                FontSize="20"
                                 Margin="2"
-                                Grid.Column="2" />
+                                Grid.Column="2">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Foreground"
+                                            Value="#EFF6FD" />
+                                    <Setter Property="Background"
+                                            Value="#D93025" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver"
+                                                 Value="True">
+                                            <Setter Property="Background"
+                                                    Value="#902018" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border CornerRadius="5"
+                                            Background="{TemplateBinding Background}">
+                                        <ContentPresenter VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                     </Grid>
                 </Grid>
+
+                <!-- Central panel -->
                 <StackPanel Background="#4A76A2"
                             Opacity="0.8"
                             Grid.Column="1" />
@@ -154,7 +187,6 @@
 
                     <Button x:Name="btnLogin"
                             Command="{Binding LoginCommand}"
-                            Click="OnLoginClick"
                             Content="LOG IN"
                             FontSize="20"
                             Foreground="#EFF6FD"
